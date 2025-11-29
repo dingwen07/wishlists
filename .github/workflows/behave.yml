@@ -48,7 +48,7 @@ jobs:
           apt-get update
           apt-get install -y google-chrome-stable
 
-      - name: Install Chromedriver (matches installed Chrome)
+      - name: Install Chromedriver
         run: |
           CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
           wget -q https://storage.googleapis.com/chrome-for-testing-public/$CHROME_VERSION/linux64/chromedriver-linux64.zip
@@ -73,6 +73,9 @@ jobs:
       
       - name: Run Behave tests
         run: behave
+        env:
+          BASE_URL: "http://localhost:5000"
+          DRIVER: "chrome"
       
       - name: Cleanup
         if: always()
