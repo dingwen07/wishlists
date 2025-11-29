@@ -8,7 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: selenium/standalone-chrome:latest
+    container: 
+      image: selenium/standalone-chrome:latest
+      options: --user root
     services:
       postgres:
         image: postgres:alpine
