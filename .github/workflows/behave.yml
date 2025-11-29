@@ -38,7 +38,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip pipenv
           pipenv install --system --dev
-          apt-get update && apt-get install -y wget gnupg unzip curl procps
+          apt-get update && apt-get install -y wget gnupg unzip curl procps psmisc
 
       - name: Install Google Chrome
         run: |
@@ -66,18 +66,18 @@ jobs:
         run: |
           sleep 10
       
-      - name: Display server logs
-        if: failure()
-        run: |
-          cat server.log
-      
       - name: Run Behave tests
         run: behave
         env:
           BASE_URL: "http://localhost:5000"
           DRIVER: "chrome"
       
+      - name: Display server logs
+        if: failure()
+        run: |
+          cat server.log
+
       - name: Cleanup
         if: always()
         run: |
-          pkill -TERM -g $$ || true
+          killall honcho || true
