@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: ghcr.io/seleniumbase/docker:python311
+    container: seleniarm/standalone-chromium:latest
 
     services:
       postgres:
@@ -25,8 +25,7 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
@@ -39,19 +38,19 @@ jobs:
           setsid honcho start > server.log 2>&1 &
         env:
           DATABASE_URI: "postgresql+psycopg://postgres:postgres@postgres:5432/testdb"
-      
-      - name: Wait for the service to be ready
+
+      - name: Wait for the service
         run: sleep 10
 
-      - name: Run Behave tests
+      - name: Run Behave Tests
         run: behave
         env:
           BASE_URL: "http://localhost:5000"
           DRIVER: "chrome"
 
-      - name: Display server logs
+      - name: Show server logs on failure
         if: failure()
-        run: cat server.log
+        run: cat server.log || echo "Server log does not exist."
 
       - name: Cleanup
         if: always()
