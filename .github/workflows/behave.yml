@@ -42,7 +42,7 @@ jobs:
       # run make run in the background to start the service
       - name: Start the service
         run: |
-          nohup honcho start
+          setsid honcho start > server.log 2>&1 &
         env:
           DATABASE_URI: "postgresql+psycopg://postgres:postgres@postgres:5432/testdb"
       
@@ -50,5 +50,16 @@ jobs:
         run: |
           sleep 10
       
+      - name: Display server logs
+        if: failure()
+        run: |
+          cat server.log
+      
       - name: Run Behave tests
         run: behave
+      
+      - name: Cleanup
+        if: always()
+        run: |
+          pkill -TERM -g $$ || true
+
